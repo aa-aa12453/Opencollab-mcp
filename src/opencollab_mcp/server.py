@@ -13,6 +13,8 @@ import logging
 import os
 
 from mcp.server.mcpserver import MCPServer
+from starlette.requests import Request
+from starlette.responses import PlainTextResponse
 
 from .constants import __version__
 from .tools import discovery, evaluation, issues
@@ -33,6 +35,11 @@ def build_server() -> MCPServer:
     discovery.register(mcp)
     evaluation.register(mcp)
     issues.register(mcp)
+
+    @mcp.custom_route("/health", methods=["GET"], include_in_schema=False)
+    async def health_check(_: Request) -> PlainTextResponse:
+        return PlainTextResponse("ok")
+
     return mcp
 
 
